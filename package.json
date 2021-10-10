@@ -1,0 +1,19 @@
+{
+  "name": "bilibiliemoji",
+  "version": "1.0.0",
+  "description": "下载B站表情包",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "emoji",
+    "bilibili"
+  ],
+  "author": "hhxy",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.22.0",
+    "request": "^2.88.2"
+  }
+}
