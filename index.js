@@ -5,7 +5,16 @@ main()
 
 function main () {
     const emojis = getUrls()
-    download(emojis)
+    let i = 0;
+     const interval = setInterval(()=>{
+         if(i>emojis.length){
+             clearInterval(interval);
+         } else {
+            download(emojis,i,i+=10);
+         }
+        
+    },10000)
+    
 }
 // 获取所有地址并存储为一个json文件
 function getUrls () {
@@ -28,32 +37,42 @@ function getUrls () {
     return emojis
 }
 // 下载图片
-function download (emojis) {
-    emojis.forEach(emojiList => {
+function download (emojis,min,max) {
+    emojis.forEach((emojiList,i) => {
         // 分组下载
-        fs.mkdir(`res/${emojiList.name}`, { recursive: true }, () => {
-            const keyValue = {}
-            if (emojiList.name !== '颜文字') {
-                emojiList.emotes.forEach(emote => {
-                    let url = emote.url;
-                    url = url.replace('http://i0.hdslb.com/bfs/emote', `${emojiList.name}`);
-                    keyValue[emote.name] = emote;
-                    axios({
-                        method: 'get',
-                        url: emote.url,
-                        responseType: 'stream'
-                    }).then((response) => {
-                        response.data.pipe(fs.createWriteStream(`res/${url}`, { autoClose: true })).on('close', function () {
-                            console.log(`${emote.name}下载完成`)
-                        })
-                    }).catch(err => {
-                        console.log(emote.name)
-                    });
-                })
-                fs.writeFile(`res/${emojiList.name}/keyValue.json`, JSON.stringify(keyValue), (err) => {
-                    console.error(err)
-                })
-            }
-        })
+        if(i>= min && i<max){
+            fs.mkdir(`res/${emojiList.name}`, { recursive: true }, () => {
+                const keyValue = {}
+                if (emojiList.name !== '颜文字') {
+                    emojiList.emotes.forEach(emote => {
+                        let url = emote.url;
+                        url = url.replace('http://i0.hdslb.com/bfs/emote', `${emojiList.name}`);
+                        keyValue[emote.name] = emote;
+                        axios({
+                            method: 'get',
+                            url: emote.url,
+                            responseType: 'stream'
+                        }).then((response) => {
+                            response.data.pipe(fs.createWriteStream(`res/${url}`, { autoClose: true })).on('close', function () {
+                                console.log(`${emote.name}下载完成`)
+                            })
+                        }).catch(err => {
+                            console.log(`下载失败：${emote.name}`)
+                            fs.appendFile('errorFile.js',JSON.stringify({
+                                url:emote.url,
+                                name:emote.name,
+                                type:emojiList.name
+                            }),function(){
+                                console.log('**************************************')
+                            })
+                        });
+                    })
+                    fs.writeFile(`res/${emojiList.name}/keyValue.json`, JSON.stringify(keyValue), (err) => {
+                        console.error(err)
+                    })
+                }
+            })
+        }
+        
     })
 }
