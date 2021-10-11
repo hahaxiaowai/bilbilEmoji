@@ -9,6 +9,7 @@ function main () {
      const interval = setInterval(()=>{
          if(i>emojis.length){
              clearInterval(interval);
+             console.log('*****下载完成*****')
          } else {
             download(emojis,i,i+=10);
          }
